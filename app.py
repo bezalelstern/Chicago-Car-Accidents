@@ -1,14 +1,15 @@
 from flask import Flask
 from repository.csv_repository import init_db
+from blueprints.info import info_bp
 app = Flask(__name__)
 
-
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
+app.register_blueprint(info_bp)
+# @app.route('/')
+# def init():
+#     init_db()
+#     return 'Hello, World!'
 
 
 
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)

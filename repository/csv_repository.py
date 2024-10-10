@@ -1,5 +1,5 @@
 import csv
-
+from datetime import datetime
 
 from database.connect import accidents, accident_details, injuries
 
@@ -15,9 +15,11 @@ def read_csv(csv_path):
 def init_db():
    accidents.drop()
    accident_details.drop()
+   injuries.drop()
 
    for row in read_csv('data/Traffic_Crashes_-_Crashes - 20k rows.csv'):
        accident_detail = {
+           '_id': row['CRASH_RECORD_ID'],
            'FIRST_CRASH_TYPE': row['FIRST_CRASH_TYPE'],
            'CRASH_TYPE': row['CRASH_TYPE'],
            'BEAT_OF_OCCURRENCE': row['BEAT_OF_OCCURRENCE'],
@@ -33,6 +35,7 @@ def init_db():
 
 
        injurie = {
+                '_id': row['CRASH_RECORD_ID'],
                 'BEAT_OF_OCCURRENCE': row['BEAT_OF_OCCURRENCE'],
                "MOST_SEVERE_INJURY": row["MOST_SEVERE_INJURY"],
                "INJURIES_TOTAL": row["INJURIES_TOTAL"],
@@ -47,7 +50,8 @@ def init_db():
 
        accident = {
            '_id': row['CRASH_RECORD_ID'],
-           "crash_date": row["CRASH_DATE"],
+           "crash_date": parse_date(row["CRASH_DATE"]),
+           'BEAT_OF_OCCURRENCE': row['BEAT_OF_OCCURRENCE'],
            'details_id': details_id,
            'injurie_id': injurie_id,
            'CRASH_HOUR': row['CRASH_HOUR'],
@@ -62,3 +66,8 @@ def init_db():
            },
        }
        accidents.insert_one(accident)
+
+def parse_date(date_str: str):
+    has_seconds = len(date_str.split(' ')) > 2
+    date_format = '%m/%d/%Y %H:%M:%S %p' if has_seconds else '%m/%d/%Y %H:%M'
+    return str(datetime.strptime(date_str, date_format).date())
