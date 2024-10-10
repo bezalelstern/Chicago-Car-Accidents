@@ -1,4 +1,5 @@
 from flask import Flask
+from repository.csv_repository import init_db
 app = Flask(__name__)
 
 
@@ -9,4 +10,5 @@ def hello_world():
 
 
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True)
