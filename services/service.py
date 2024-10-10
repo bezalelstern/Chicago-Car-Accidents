@@ -7,7 +7,8 @@ def parse_date(date_str: str):
     return str(datetime.strptime(date_str, date_format).date())
 
 
-def get_time_range(time_period,start_date):
+def get_time(time_period,start_date):
+    start_date = datetime.strptime(start_date, '%d/%m/%Y').date()
     if time_period == 'day':
         end_date = start_date+ timedelta(days=1)
     elif time_period == 'week':
