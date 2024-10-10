@@ -16,7 +16,7 @@ def get_accidents(beat):
     return jsonify(accidents)
 
 
-@info_bp.route('/accidents_date', methods=['POST'])
+@info_bp.route('/accidents/date', methods=['POST'])
 def get_accidents_by_date():
     try:
         data = request.json
