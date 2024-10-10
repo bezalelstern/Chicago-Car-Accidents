@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from repository.accident_repository import get_accidents_by_beat, find_by_date, group_accidents
+from repository.accident_repository import get_accidents_by_beat, find_by_date, group_accidents, group_by_injuries
 from repository.csv_repository import init_db
 from services.service import get_time
 
@@ -36,6 +36,8 @@ def get_accidents_by_cause(beat):
     return jsonify(group_accidents(beat))
 
 
-
+@info_bp.route('/accidents/injury/<beat>', methods=['GET'])
+def get_accidents_with_injury(beat):
+    return jsonify(group_by_injuries(beat))
 
 

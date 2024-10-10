@@ -9,7 +9,6 @@ def get_accidents_by_beat(beat):
     }
 
 
-
 def find_by_date(beat,start_date,end_date):
     try:
         query = {
@@ -45,3 +44,22 @@ def group_accidents(beat):
 
     except Exception as e:
         return {"error": str(e)}, 500
+
+
+def group_by_injuries(beat):
+    query = [
+        {'$match': {'BEAT_OF_OCCURRENCE': beat}},
+        {
+            '$group': {
+                '_id': None,
+                'total_injuries': {'$sum': '$INJURIES_TOTAL'},
+                'fatal_injuries': {'$sum': '$INJURIES_FATAL'},
+                'non_fatal_injuries': {'$sum': {'$subtract': ['$INJURIES_TOTAL', '$INJURIES_FATAL']}},
+                'events': {'$push': '$$ROOT'}
+            }
+        }
+    ]
+    result = list(injuries.aggregate(query))
+    if not result:
+        return "No data found"
+    return {'stat': result}

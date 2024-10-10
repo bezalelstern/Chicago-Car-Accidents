@@ -1,7 +1,6 @@
 import csv
-from datetime import datetime
-
 from database.connect import accidents, accident_details, injuries
+from services.service import parse_date
 
 
 def read_csv(csv_path):
@@ -38,12 +37,11 @@ def init_db():
                 '_id': row['CRASH_RECORD_ID'],
                 'BEAT_OF_OCCURRENCE': row['BEAT_OF_OCCURRENCE'],
                "MOST_SEVERE_INJURY": row["MOST_SEVERE_INJURY"],
-               "INJURIES_TOTAL": row["INJURIES_TOTAL"],
-               "INJURIES_FATAL": row["INJURIES_FATAL"],
-               "INJURIES_INCAPACITATING": row["INJURIES_INCAPACITATING"],
-               "INJURIES_NON_INCAPACITATING": row["INJURIES_NON_INCAPACITATING"],
-               "INJURIES_REPORTED_NOT_EVIDENT": row["INJURIES_REPORTED_NOT_EVIDENT"],
-               "INJURIES_NO_INDICATION": row["INJURIES_NO_INDICATION"],
+               "INJURIES_TOTAL":to_int(row["INJURIES_TOTAL"]),
+               "INJURIES_FATAL":to_int(row["INJURIES_FATAL"]),
+               "INJURIES_INCAPACITATING":to_int(row["INJURIES_INCAPACITATING"]),
+               "INJURIES_NON_INCAPACITATING": to_int(row["INJURIES_NON_INCAPACITATING"]),
+               "INJURIES_REPORTED_NOT_EVIDENT":to_int(row["INJURIES_REPORTED_NOT_EVIDENT"]),
            }
 
        injurie_id = injuries.insert_one(injurie).inserted_id
@@ -67,7 +65,15 @@ def init_db():
        }
        accidents.insert_one(accident)
 
-def parse_date(date_str: str):
-    has_seconds = len(date_str.split(' ')) > 2
-    date_format = '%m/%d/%Y %H:%M:%S %p' if has_seconds else '%m/%d/%Y %H:%M'
-    return str(datetime.strptime(date_str, date_format).date())
+
+   #אינדוקס על השדות הכי רלוונטים לשאילתות
+   accident_details.create_index("BEAT_OF_OCCURRENCE")
+   accidents.create_index("BEAT_OF_OCCURRENCE")
+   injuries.create_index("BEAT_OF_OCCURRENCE")
+   accidents.create_index("crash_date")
+
+def to_int(string):
+    if string:
+         return int(string)
+    else:
+         return 0
